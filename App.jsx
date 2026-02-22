@@ -7,7 +7,7 @@ const SUPABASE_URL = "https://neuqtxqgobqayljgrtgv.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ldXF0eHFnb2JxYXlsamdydGd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1ODU0MzQsImV4cCI6MjA4NzE2MTQzNH0.jMRG0kk_UMhrRQOjD4-H8L-IZ4gbk1Bdm5kaWvNyEf4";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const ADMIN_CODE = "admin123";
+const ADMIN_CODE = "YHS@2025";
 
 const SEED_ELECTIONS = [
   { id: "e1", title: "Head Boy", description: "Choose the Head Boy who will serve as the top male student leader.", status: "active", start_date: "2025-02-01", end_date: "2025-02-28" },
@@ -256,6 +256,20 @@ export default function App() {
   const [adminError, setAdminError] = useState("");
   const [toast, setToast] = useState(null);
   const [newElection, setNewElection] = useState({ title: "", description: "", start_date: "", end_date: "", candidates: ["", ""] });
+  const [keyBuffer, setKeyBuffer] = useState("");
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      const newBuffer = (keyBuffer + e.key).slice(-20);
+      setKeyBuffer(newBuffer);
+      if (newBuffer.includes("yhsadmin2025")) {
+        setView("adminLogin");
+        setKeyBuffer("");
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [keyBuffer]);
 
   const showToast = (msg, type = "success") => {
     setToast({ msg, type });
@@ -365,10 +379,7 @@ export default function App() {
             <nav className="nav">
               <button className="nav-btn" onClick={() => setView("welcome")}>Home</button>
               {voterId && <button className="nav-btn" onClick={() => setView("vote")}>My Ballot</button>}
-              <button className="nav-btn" onClick={() => setView("results")}>Results</button>
-              {!isAdmin
-                ? <button className="nav-btn nav-btn-accent" onClick={() => setView("adminLogin")}>Admin</button>
-                : <button className="nav-btn nav-btn-accent" onClick={() => setView("admin")}>Dashboard</button>}
+              {isAdmin && <button className="nav-btn nav-btn-accent" onClick={() => setView("admin")}>Dashboard</button>}
             </nav>
           </div>
         </header>
@@ -456,49 +467,7 @@ export default function App() {
             </div>
           )}
 
-          {view === "results" && (
-            <div className="page">
-              <div className="section-header">
-                <h2 className="section-title">Live Results</h2>
-                <p className="section-sub">Real-time vote tallies — Yeshua High School Elections 2025</p>
-              </div>
-              {loading ? <p className="empty">Loading results...</p> :
-               elections.map(el => {
-                 const total = totalVotes(el);
-                 const sorted = [...(el.candidates || [])].sort((a, b) => (b.votes||0) - (a.votes||0));
-                 return (
-                   <div className="result-card" key={el.id}>
-                     <div className="result-header">
-                       <div>
-                         <h3 className="result-title">{el.title}</h3>
-                         <span className={"status-badge status-" + el.status}>{statusDot(el.status)} {el.status}</span>
-                       </div>
-                       <div style={{textAlign:"right"}}>
-                         <div className="result-total">{total}</div>
-                         <div className="result-total-label">VOTES CAST</div>
-                       </div>
-                     </div>
-                     {sorted.map((c, i) => {
-                       const pct = total ? Math.round(((c.votes||0) / total) * 100) : 0;
-                       return (
-                         <div className="result-row" key={c.id}>
-                           <div className="result-name-row">
-                             <span className="result-rank">#{i+1}</span>
-                             <span className="result-name">{c.name}</span>
-                             {i === 0 && total > 0 && <span className="winner-tag">LEADING</span>}
-                             <span className="result-votes">{c.votes||0} votes</span>
-                             <span className="result-pct">{pct}%</span>
-                           </div>
-                           <div className="bar-bg"><div className={"bar-fill" + (i===0?" leader":"")} style={{width:pct+"%"}} /></div>
-                         </div>
-                       );
-                     })}
-                   </div>
-                 );
-               })
-              }
-            </div>
-          )}
+
 
           {view === "adminLogin" && (
             <div className="page">
@@ -519,6 +488,36 @@ export default function App() {
               <div className="section-header">
                 <h2 className="section-title">Admin Dashboard</h2>
                 <p className="section-sub">Manage Yeshua High School elections</p>
+              </div>
+              <div className="admin-panel">
+                <h3 className="admin-panel-title">📊 Live Results</h3>
+                {elections.map(el => {
+                  const total = totalVotes(el);
+                  const sorted = [...(el.candidates || [])].sort((a, b) => (b.votes||0) - (a.votes||0));
+                  return (
+                    <div key={el.id} style={{marginBottom:24,paddingBottom:24,borderBottom:"1px solid var(--border)"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                        <strong style={{fontFamily:"Playfair Display,serif",fontSize:16}}>{el.title}</strong>
+                        <span style={{fontFamily:"DM Mono,monospace",fontSize:13,color:"var(--gold)",fontWeight:700}}>{total} votes</span>
+                      </div>
+                      {sorted.map((c, i) => {
+                        const pct = total ? Math.round(((c.votes||0) / total) * 100) : 0;
+                        return (
+                          <div key={c.id} style={{marginBottom:8}}>
+                            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:4}}>
+                              <span style={{fontFamily:"DM Mono,monospace",fontSize:11,color:"var(--text-faint)",minWidth:20}}>#{i+1}</span>
+                              <span style={{flex:1,fontSize:14,fontWeight:600}}>{c.name}</span>
+                              {i===0 && total>0 && <span className="winner-tag">LEADING</span>}
+                              <span style={{fontFamily:"DM Mono,monospace",fontSize:12,color:"var(--text-faint)"}}>{c.votes||0} votes</span>
+                              <span style={{fontFamily:"DM Mono,monospace",fontSize:13,color:"var(--gold)",fontWeight:700,minWidth:40,textAlign:"right"}}>{pct}%</span>
+                            </div>
+                            <div className="bar-bg"><div className={"bar-fill"+(i===0?" leader":"")} style={{width:pct+"%"}} /></div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
               </div>
               <div className="admin-panel">
                 <h3 className="admin-panel-title">All Elections</h3>
