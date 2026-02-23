@@ -104,10 +104,10 @@ const css = `
   .nav-btn-accent:hover { background: rgba(139,26,26,0.15); color: var(--gold); }
 
   /* MAIN */
-  .main { max-width: 1200px; margin: 0 auto; padding: 48px 32px; position: relative; z-index: 1; }
+  .main { max-width: 800px; margin: 0 auto; padding: 48px 32px; position: relative; z-index: 1; }
 
   /* WELCOME PAGE */
-  .welcome-page { text-align: center; }
+  .welcome-page { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .school-crest-big { width: 140px; height: 140px; border-radius: 50%; overflow: hidden; margin: 0 auto 28px; border: 4px solid var(--gold); box-shadow: 0 0 40px var(--gold-glow), 0 8px 32px rgba(0,0,0,0.12); animation: crestGlow 3s ease-in-out infinite; }
   .school-crest-big img { width: 100%; height: 100%; object-fit: cover; }
   @keyframes crestGlow { 0%,100%{ box-shadow: 0 0 30px var(--gold-glow), 0 8px 32px rgba(0,0,0,0.12); } 50%{ box-shadow: 0 0 60px rgba(139,26,26,0.35), 0 8px 32px rgba(0,0,0,0.15); } }
