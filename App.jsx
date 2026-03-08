@@ -45,7 +45,12 @@ function AssistantView() {
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": "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",
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
         body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: SYSTEM_PROMPT, messages: newMsgs })
       });
       const data = await res.json();
